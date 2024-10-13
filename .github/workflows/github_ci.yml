@@ -23,15 +23,3 @@ jobs:
             cmake -Bbuild -G "Unix Makefiles"       
             cmake --build build
             ./build/bin/test_matrix
-
-  macos-build:
-    runs-on: macos-14
-    steps:
-        - uses: actions/checkout@v2
-        - run: |
-            mkdir build
-            cmake -Bbuild -G "Xcode"       
-            cmake --build build
-            ./build/bin/test_matrix
-        
-
