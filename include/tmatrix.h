@@ -144,7 +144,7 @@ public:
           return result;
       }
   }
-  T operator*(const TDynamicVector& v) noexcept(noexcept(T()))
+  T operator*(const TDynamicVector& v) 
   {
       if (sz != v.sz) throw logic_error("Wrong dimensions"); else {
           T result = (T)0;
@@ -245,7 +245,7 @@ public:
   }
   TDynamicMatrix operator*(const TDynamicMatrix& m)
   {
-      if (pMem[0].sz != m.pMem[0].sz || sz != m.sz) throw logic_error("Wrong dimensions"); else {
+      if (pMem[0].size() != m.pMem[0].size() || sz != m.sz) throw logic_error("Wrong dimensions"); else {
           TDynamicMatrix result(sz);
           TDynamicVector<T> tmp(pMem[0].sz);
           for (size_t i = 0; i < sz; i++) {
