@@ -96,7 +96,7 @@ public:
   const T& at(size_t ind) const
   {
       if (ind<0 || ind>sz - 1) throw std::out_of_range("Out of range");
-      else return pMem[ind]
+      else return pMem[ind];
   }
 
   // сравнение
@@ -265,7 +265,7 @@ public:
       if (v.sz != row && v.pMem[0].size() != col) throw logic_error("Wrong dimensions");
       for (size_t i = 0; i < row; i++)
           for (size_t j = 0; j < col; j++)
-              isrt >> v.pMem[i][j];
+              istr >> v.pMem[i][j];
       return istr;
   }
   friend ostream& operator<<(ostream& ostr, const TDynamicMatrix& v)
