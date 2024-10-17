@@ -72,6 +72,7 @@ public:
   }
   TDynamicVector& operator=(TDynamicVector&& v) noexcept
   {
+      delete[] pMem;
       pMem = nullptr;
       swap(*this, v);
       return (*this);
