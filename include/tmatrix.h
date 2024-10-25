@@ -69,6 +69,7 @@ public:
               delete [] pMem;
               sz=v.sz;
               pMem = new T[sz];
+              if (pMem==nullptr) throw bad_alloc();
           }
           //copy(v.pMem, v.pMem + v.sz, pMem);
           for (size_t i = 0; i < sz; ++i) pMem[i]=v.pMem[i];
@@ -181,7 +182,7 @@ public:
       ostr << v.pMem[i] << ' '; // требуется оператор<< для типа T
     return ostr;
   }
-  friend class TDynamicMatrixCRS<T>;
+  //friend class TDynamicMatrixCRS<T>;
 };
 
 
@@ -227,16 +228,14 @@ public:
 
   // матрично-векторные операции
   TDynamicVector<T> operator*(const TDynamicVector<T>& v)
-  {
-      if (size() != v.size()) throw range_error("range_error");
-      TDynamicVector<T> Res(sz);
-      for (size_t i = 0; i < sz; ++i) {
-          for (size_t j = 0; j < sz; ++j) {
-              Res[i] += pMem[i][j] * v[j];
-          }
-      }
-      return Res;
-  }
+    {
+        if (size() != v.size()) throw range_error("range_error");
+        TDynamicVector<T> Res(sz);
+        for (size_t i = 0; i < sz; ++i) {
+            Res[i] = pMem[i]*v;
+        }
+        return Res;
+    }
 
   // матрично-матричные операции
   TDynamicMatrix operator+(const TDynamicMatrix& m)
@@ -285,7 +284,7 @@ public:
       return ostr;
   }
   //для реализации CRS
-  friend class TDynamicMatrixCRS<T>;
+  //friend class TDynamicMatrixCRS<T>;
 };
 
 
@@ -295,83 +294,24 @@ template<typename T>
 class TDynamicMatrixCRS
 {
     vector<T> value;//вектор значений
-    vector<size_t> rowIndex;//вектор индексов строк
+    vector<size_t> rowPtr;//вектор индексов строк
     vector<size_t>  col;//вектор индексов столбцов
+    size_t sz;
 public:
-    TDynamicMatrixCRS(){}
-
+    TDynamicMatrixCRS():sz(0){}
+    
     TDynamicMatrixCRS(const TDynamicMatrixCRS& m) {
         value = m.value;
         col = m.col;
-        rowIndex = m.rowIndex;
+        rowPtr = m.rowPtr;
+        sz=m.sz;
     }
-    TDynamicMatrixCRS(vector<T> _value, vector<size_t> _rowIndex, vector<size_t> _col):value(_value), rowIndex(_rowIndex), col(_col) {}
-
+    TDynamicMatrixCRS(vector<T> _value, vector<size_t> _rowPtr, vector<size_t> _col):value(_value), rowPtr(_rowPtr), col(_col),sz(rowPtr.size() - 1) {}
+    
     TDynamicMatrixCRS(const TDynamicMatrix<T>& m) {
         size_t temp = 0;
-        for (size_t row = 0; row < m.sz; ++row) {
-            rowIndex.push_back(temp);
-            for (size_t column = 0; column < m.sz; ++column) {
-                if (m[row][column] != T()) {
-                    value.push_back(m[row][column]);
-                    col.push_back(column);
-                    temp++;
-                }
-            } 
-        }
-        rowIndex.push_back(temp);
-    }
-
-    TDynamicMatrixCRS operator*(const T& val)
-    {
-        TDynamicMatrixCRS Res(*this);
-        for (size_t i = 0; i < value.size(); ++i) Res.value[i] = Res.value[i] * val;
-        return Res;
-    }
-
-    
-    TDynamicVector<T> operator*(const TDynamicVector<T>& v) {
-        TDynamicVector<T> Res(rowIndex.size()-1);
-        if (v.sz != (rowIndex.size() - 1)) throw logic_error("different length");
-        for (size_t i = 0; i < rowIndex.size() - 1; ++i) {
-            for (size_t j = rowIndex[i]; j < rowIndex[i + 1]; ++j) Res[i] = Res[i] + (value[j] * v.pMem[col[j]]);
-        }
-        return Res;
-    }
-    
-    TDynamicMatrix<T> operator*(const TDynamicMatrix<T>& m) {
-        TDynamicMatrix<T> Res(rowIndex.size() - 1);
-        if (m.sz != (rowIndex.size() - 1)) throw logic_error("different length");
-        for (size_t i = 0; i < rowIndex.size() - 1; ++i) {
-            for (size_t j = rowIndex[i]; j < rowIndex[i + 1]; ++j) {
-                for (size_t k = 0; k < rowIndex.size()-1; ++k) {
-                    Res[i][k] = Res[i][k] + (value[j] * m.pMem[col[j]][k]);
-                }
-            }
-        }
-        return Res;
-    }
-        
-
-    //преобразование типа
-    operator TDynamicMatrix<T>() {
-        TDynamicMatrix<T> Res(rowIndex.size()-1);
-        for (size_t i = 0; i < rowIndex.size() - 1; ++i) {
-            for (size_t j = rowIndex[i]; j < rowIndex[i + 1]; ++j) {
-                Res[i][col[j]] = value[j];
-            }
-        }
-        return Res;
-    }
-
-    TDynamicMatrixCRS& operator=(const TDynamicMatrix<T>& m) {
-        value.clear();
-        rowIndex.clear();
-        col.clear();
-
-        size_t temp = 0;
         for (size_t row = 0; row < m.size(); ++row) {
-            rowIndex.push_back(temp);
+            rowPtr.push_back(temp);
             for (size_t column = 0; column < m.size(); ++column) {
                 if (m[row][column] != T()) {
                     value.push_back(m[row][column]);
@@ -380,13 +320,128 @@ public:
                 }
             }
         }
-        rowIndex.push_back(temp);
+        rowPtr.push_back(temp);
+        sz=m.size();
+    }
+    
+    
+    TDynamicMatrixCRS operator*(const T& val)
+    {
+        TDynamicMatrixCRS Res(*this);
+        for (size_t i = 0; i < value.size(); ++i) Res.value[i] = Res.value[i] * val;
+        return Res;
+    }
+    
+    
+    TDynamicVector<T> operator*(const TDynamicVector<T>& v) {
+        TDynamicVector<T> Res(sz);
+        if (v.size() != (sz)) throw logic_error("different length");
+        for (size_t i = 0; i < sz; ++i) {
+            for (size_t j = rowPtr[i]; j < rowPtr[i + 1]; ++j) Res[i] = Res[i] + (value[j] * v[col[j]]);
+        }
+        return Res;
+    }
+    
+    //алгоритм взят с http://www.hpcc.unn.ru/file.php?id=486
+    TDynamicMatrixCRS<T> transposition() const{
+        TDynamicMatrixCRS<T> Res;
+        size_t Col,RIndex,IIndex;
+        T V;
+        for(size_t i = 0; i<value.size();++i){
+            Res.value.push_back(T());
+            Res.col.push_back(T());
+        }
+        for(size_t i = 0; i<rowPtr.size();++i){
+            Res.rowPtr.push_back(T());
+        }
+        for (size_t i = 0; i < col.size(); i++)
+            Res.rowPtr[col[i] + 1]++;
+        size_t S = 0;
+        size_t tmp;
+        for (size_t i = 1; i <= sz; i++)
+        {
+            tmp = Res.rowPtr[i];
+            Res.rowPtr[i] = S;
+            S = S + tmp;
+        }
+        
+        for (size_t i = 0; i < sz; i++)
+        {
+            Col = i;
+            for (size_t j = rowPtr[i]; j < rowPtr[i+1]; j++)
+            {
+                V = value[j];
+                RIndex = col[j];
+                IIndex = Res.rowPtr[RIndex + 1];
+                Res.value[IIndex] = V;
+                Res.col[IIndex] = Col;
+                Res.rowPtr[RIndex + 1]++;
+            }
+        }
+        Res.sz=sz;
+        return Res;
+    }
+    
+    TDynamicMatrixCRS<T> operator*(const TDynamicMatrixCRS<T>& m){
+        TDynamicMatrixCRS<T> Res;
+        TDynamicVector<T> temp1(sz);
+        TDynamicVector<T> temp2(sz);
+        size_t temp3 = 0;
+        TDynamicMatrixCRS<T> m_T = m.transposition();
+        
+        for(size_t k = 0; k<sz;++k){
+            Res.rowPtr.push_back(temp3);
+            temp1=TDynamicVector<T>(sz);
+            temp2=TDynamicVector<T>(sz);
+            //взятие k-ой строки левой матрицы в вектор temp1
+            for(size_t i = rowPtr[k];i<rowPtr[k+1];++i){
+                temp1[col[i]]=value[i];
+            }
+            for (size_t u = 0; u<sz;++u){
+                //взятие u-ой строки правой транспонированной матрицы(= u-ого столбца правой матрицы) в вектор temp2
+                for(size_t p = m_T.rowPtr[u];p<m_T.rowPtr[u+1];++p){
+                    temp2[m_T.col[p]]=m_T.value[p];
+                }
+                //Res[k][u]=(temp1*temp2);
+                //формирование CRS матрицы умножением строки(temp1) левой матрицы на столбец(temp2) правой матрицы
+                if ((temp1*temp2) != T()) {
+                    Res.value.push_back((temp1*temp2));
+                    Res.col.push_back(u);
+                    temp3++;
+                }
+            }
+        }
+        Res.rowPtr.push_back(temp3);
+        Res.sz=m.size();
+        return Res;
+    }
 
-        return *this;
+    /*TDynamicMatrix<T> operator*(const TDynamicMatrix<T>& m) {
+        TDynamicMatrix<T> Res(sz);
+        if (m.size() != (sz)) throw logic_error("different length");
+        for (size_t i = 0; i < sz; ++i) {
+            for (size_t j = rowPtr[i]; j < rowPtr[i + 1]; ++j) {
+                for (size_t k = 0; k < sz; ++k) {
+                    Res[i][k] = Res[i][k] + (value[j] * m[col[j]][k]);
+                }
+            }
+        }
+        return Res;
+    }*/
+        
+    //преобразование типа
+    operator TDynamicMatrix<T>() {
+        TDynamicMatrix<T> Res(sz);
+        for (size_t i = 0; i < sz; ++i) {
+            for (size_t j = rowPtr[i]; j < rowPtr[i + 1]; ++j) {
+                Res[i][col[j]] = value[j];
+            }
+        }
+        return Res;
     }
 
     bool operator==(const TDynamicMatrixCRS& m) const{
-        if (value != m.value || rowIndex != m.rowIndex || col!=m.col) return 0;
+        if (value != m.value || rowPtr != m.rowPtr || col!=m.col) return 0;
         return 1;
     }
     bool operator!=(const TDynamicMatrixCRS& m) const {
@@ -396,32 +451,38 @@ public:
     TDynamicMatrixCRS& operator=(const TDynamicMatrixCRS& m) {
         if (*this != m) {
             value.clear();
-            rowIndex.clear();
+            rowPtr.clear();
             col.clear();
             value = m.value;
-            rowIndex = m.rowIndex;
+            rowPtr = m.rowPtr;
             col = m.col;
+            sz=m.sz();
         }
         return *this;
     }
 
+    TDynamicMatrixCRS& operator=(const TDynamicMatrix<T>& m) {
+        *this = TDynamicMatrixCRS<T>(m);
+        return *this;
+    }
+    
+    size_t size() const { return sz; }
+    
     // ввод/вывод
     friend istream& operator>>(istream& istr, TDynamicMatrixCRS<T>& m)
     {
         TDynamicMatrix<T> temp;
         istr >> temp;
-        m = temp;
+        m = TDynamicMatrixCRS<T>(temp);
         return istr;
     }
-
-    size_t size() const { return rowIndex.size() - 1; }
 
     friend ostream& operator<<(ostream& ostr, const TDynamicMatrixCRS<T>& m)
     {
         ostr << "value: ";
         for (size_t i = 0; i < m.value.size(); ++i) ostr<<m.value[i]<<" ";
-        ostr << endl<<"row index: ";
-        for (size_t i = 0; i < m.rowIndex.size(); ++i) ostr << m.rowIndex[i]<<" ";
+        ostr << endl<<"row pointer: ";
+        for (size_t i = 0; i < m.rowPtr.size(); ++i) ostr << m.rowPtr[i]<<" ";
         ostr << endl<<"columns: ";
         for (size_t i = 0; i < m.col.size(); ++i) ostr << m.col[i]<<" ";
         ostr << endl;
