@@ -254,7 +254,7 @@ TEST(TDynamicMatrixCRS, res_mult_matrix3)
     v3[2][2] = 150;
     TDynamicMatrixCRS<int> v1_CRS=v1;
     TDynamicMatrixCRS<int> v2_CRS=v2;
-    EXPECT_EQ((v1_CRS * v2_CRS), (v1*v2));
+    EXPECT_EQ((TDynamicMatrix<int>)(v1_CRS * v2_CRS), (v1*v2));
 }
     
     

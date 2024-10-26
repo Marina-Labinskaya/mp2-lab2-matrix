@@ -29,7 +29,7 @@ TEST(TDynamicVector, copied_vector_is_equal_to_source_one)
 	int a[5] = { 1,2,3,4,5 };
 	TDynamicVector<int> v1(a, 5);
     TDynamicVector<int> v2(v1);
-	EXPECT_EQ(v1,v2)
+    EXPECT_EQ(v1,v2);
 }
 
 TEST(TDynamicVector, copied_vector_has_its_own_memory)
@@ -73,8 +73,8 @@ TEST(TDynamicVector, can_assign_vector_to_itself)
 {
 	TDynamicVector<char> v(10);
     TDynamicVector<char> v1(10);
-    v[0]='!';
-    v1=v;
+    v1[0]=v[0]='!';
+    v=v;
     EXPECT_EQ(v, v1);
 }
 
