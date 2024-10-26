@@ -28,12 +28,13 @@ TEST(TDynamicVector, copied_vector_is_equal_to_source_one)
 {
 	int a[5] = { 1,2,3,4,5 };
 	TDynamicVector<int> v1(a, 5);
-	ASSERT_NO_THROW(v1 = v1);
+    TDynamicVector<int> v2(v1);
+	EXPECT_EQ(v1,v2)
 }
 
 TEST(TDynamicVector, copied_vector_has_its_own_memory)
 {
-	TDynamicVector<int> v1(5), v2(5);
+	TDynamicVector<int> v1(5), v2(v1);
 	TDynamicVector<int>* pv1 = &v1;
 	TDynamicVector<int>* pv2 = &v2;
 	EXPECT_NE(pv1, pv2);
@@ -71,15 +72,20 @@ TEST(TDynamicVector, throws_when_set_element_with_too_large_index)
 TEST(TDynamicVector, can_assign_vector_to_itself)
 {
 	TDynamicVector<char> v(10);
-	ASSERT_NO_THROW(v = v);
+    TDynamicVector<char> v1(10);
+    v[0]='!';
+    v1=v;
+    EXPECT_EQ(v, v1);
 }
 
 TEST(TDynamicVector, can_assign_vectors_of_equal_size)
 {
 	TDynamicVector<char> v1(10);
 	TDynamicVector<char> v2(10);
-    v1[4]=v2[4]='!';
-    v1[6]=v2[6]=')';
+    v1[4]='!';
+    v1[6]=')';
+    v2=v1;
+    
     EXPECT_EQ(v1, v2);
 }
 

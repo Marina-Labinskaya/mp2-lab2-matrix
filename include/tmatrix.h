@@ -342,7 +342,7 @@ public:
         return Res;
     }
     
-    //алгоритм взят с http://www.hpcc.unn.ru/file.php?id=486
+    //алгоритм транспонирования взят с http://www.hpcc.unn.ru/file.php?id=486
     TDynamicMatrixCRS<T> transposition() const{
         TDynamicMatrixCRS<T> Res;
         size_t Col,RIndex,IIndex;
