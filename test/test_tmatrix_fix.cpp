@@ -26,23 +26,27 @@ TYPED_TEST_CASE_P(TestTMatrix);
 
 TYPED_TEST_P(TestTMatrix, compare_equal_matrix_return_true)
 {
+    using param = typename TestTMatrix::param;
     EXPECT_TRUE((*m1) == (*m2));
 }
 
 
 TYPED_TEST_P(TestTMatrix, can_create_copied_matrix)
 {
+    using param = typename TestTMatrix::param;
     ASSERT_NO_THROW(TDynamicMatrix<param> (((*m1))));
 }
 
 TYPED_TEST_P(TestTMatrix, copied_matrix_is_equal_to_source_one)
 {
+    using param = typename TestTMatrix::param;
     TDynamicMatrix<param> m2((*m1));
     EXPECT_EQ((*m1), m2);
 }
 
 TYPED_TEST_P(TestTMatrix, copied_matrix_has_its_own_memory)
 {
+    using param = typename TestTMatrix::param;
     TDynamicMatrix<param> v1(5), v2(v1);
     TDynamicMatrix<param>* pv1 = &v1;
     TDynamicMatrix<param>* pv2 = &v2;
@@ -51,6 +55,7 @@ TYPED_TEST_P(TestTMatrix, copied_matrix_has_its_own_memory)
 //
 TYPED_TEST_P(TestTMatrix, matrices_with_different_size_are_not_equal)
 {
+    using param = typename TestTMatrix::param;
     TDynamicMatrix<param> v1(5);
     TDynamicMatrix<param> v2(6);
     EXPECT_NE(v1, v2);
@@ -58,6 +63,7 @@ TYPED_TEST_P(TestTMatrix, matrices_with_different_size_are_not_equal)
 
 TYPED_TEST_P(TestTMatrix, can_add_matrices_with_equal_size)
 {
+    using param = typename TestTMatrix::param;
     TDynamicMatrix<param> v_Res(5);
     v_Res[1][1] = (*m1)[1][1] = 6;
     v_Res[1][1] += (*m2)[1][1] = 10;
@@ -70,6 +76,7 @@ TYPED_TEST_P(TestTMatrix, can_add_matrices_with_equal_size)
 
 TYPED_TEST_P(TestTMatrix, cant_add_matrices_with_not_equal_size)
 {
+    using param = typename TestTMatrix::param;
     TDynamicMatrix<param> v1(5);
     TDynamicMatrix<param> v2(6);
     ASSERT_ANY_THROW(v1 + v2);
@@ -77,6 +84,7 @@ TYPED_TEST_P(TestTMatrix, cant_add_matrices_with_not_equal_size)
 
 TYPED_TEST_P(TestTMatrix, can_subtract_matrices_with_equal_size)
 {
+    using param = typename TestTMatrix::param;
     TDynamicMatrix<param> v_Res(5);
     v_Res[1][1] += (*m1)[1][1] = 6;
     v_Res[1][1] -= (*m2)[1][1] = 10;
@@ -87,6 +95,7 @@ TYPED_TEST_P(TestTMatrix, can_subtract_matrices_with_equal_size)
 
 TYPED_TEST_P(TestTMatrix, cant_subtract_matrixes_with_not_equal_size)
 {
+    using param = typename TestTMatrix::param;
     TDynamicMatrix<param> v1(5);
     TDynamicMatrix<param> v2(6);
     ASSERT_ANY_THROW(v1 - v2);
@@ -94,6 +103,7 @@ TYPED_TEST_P(TestTMatrix, cant_subtract_matrixes_with_not_equal_size)
 
 TYPED_TEST_P(TestTMatrix, res_mult_matrix)
 {
+    using param = typename TestTMatrix::param;
     TDynamicMatrix<param> v3(5);
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 3; ++j) {
