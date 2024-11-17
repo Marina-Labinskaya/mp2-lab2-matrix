@@ -8,16 +8,20 @@ class TestTMatrix : public ::testing::Test
 protected:
     void SetUp()
     {
-        m1 = new TDynamicMatrix<T>(5);
-        m2 = new TDynamicMatrix<T>(5);
+        m1_ptr = new TDynamicMatrix<T>(5);
+        m2_ptr = new TDynamicMatrix<T>(5);
+        m1 = (*m1_ptr);
+        m2 = (*m2_ptr);
     }
     void TearDown()
     {
-        delete m1;
-        delete m2;
+        delete m1_ptr;
+        delete m2_ptr;
     }
-    TDynamicMatrix<T>* m1;
-    TDynamicMatrix<T>* m2;
+    TDynamicMatrix<T>* m1_ptr;
+    TDynamicMatrix<T>* m2_ptr;
+    TDynamicMatrix<T> m1;
+    TDynamicMatrix<T> m2;
     using param = T;
 };
 TYPED_TEST_CASE_P(TestTMatrix);
@@ -27,21 +31,21 @@ TYPED_TEST_CASE_P(TestTMatrix);
 TYPED_TEST_P(TestTMatrix, compare_equal_matrix_return_true)
 {
     using param = typename TestTMatrix::param;
-    EXPECT_TRUE((*m1) == (*m2));
+    EXPECT_TRUE((m1) == (m2));
 }
 
 
 TYPED_TEST_P(TestTMatrix, can_create_copied_matrix)
 {
     using param = typename TestTMatrix::param;
-    ASSERT_NO_THROW(TDynamicMatrix<param> (((*m1))));
+    ASSERT_NO_THROW(TDynamicMatrix<param> (((m1))));
 }
 
 TYPED_TEST_P(TestTMatrix, copied_matrix_is_equal_to_source_one)
 {
     using param = typename TestTMatrix::param;
-    TDynamicMatrix<param> m2((*m1));
-    EXPECT_EQ((*m1), m2);
+    TDynamicMatrix<param> m2((m1));
+    EXPECT_EQ((m1), m2);
 }
 
 TYPED_TEST_P(TestTMatrix, copied_matrix_has_its_own_memory)
@@ -65,13 +69,13 @@ TYPED_TEST_P(TestTMatrix, can_add_matrices_with_equal_size)
 {
     using param = typename TestTMatrix::param;
     TDynamicMatrix<param> v_Res(5);
-    v_Res[1][1] = (*m1)[1][1] = 6;
-    v_Res[1][1] += (*m2)[1][1] = 10;
-    v_Res[4][0] = (*m1)[4][0] = 50;
-    v_Res[2][3] = (*m2)[2][3] = 18;
+    v_Res[1][1] = (m1)[1][1] = 6;
+    v_Res[1][1] += (m2)[1][1] = 10;
+    v_Res[4][0] = (m1)[4][0] = 50;
+    v_Res[2][3] = (m2)[2][3] = 18;
 
 
-    EXPECT_EQ(v_Res, ((*m1) + (*m2)));
+    EXPECT_EQ(v_Res, ((m1) + (m2)));
 }
 
 TYPED_TEST_P(TestTMatrix, cant_add_matrices_with_not_equal_size)
@@ -86,11 +90,11 @@ TYPED_TEST_P(TestTMatrix, can_subtract_matrices_with_equal_size)
 {
     using param = typename TestTMatrix::param;
     TDynamicMatrix<param> v_Res(5);
-    v_Res[1][1] += (*m1)[1][1] = 6;
-    v_Res[1][1] -= (*m2)[1][1] = 10;
-    v_Res[4][0] += (*m1)[4][0] = 50;
-    v_Res[2][3] -= (*m2)[2][3] = 18;
-    EXPECT_EQ(v_Res, ((*m1) - (*m2)));
+    v_Res[1][1] += (m1)[1][1] = 6;
+    v_Res[1][1] -= (m2)[1][1] = 10;
+    v_Res[4][0] += (m1)[4][0] = 50;
+    v_Res[2][3] -= (m2)[2][3] = 18;
+    EXPECT_EQ(v_Res, ((m1) - (m2)));
 }
 
 TYPED_TEST_P(TestTMatrix, cant_subtract_matrixes_with_not_equal_size)
@@ -107,7 +111,7 @@ TYPED_TEST_P(TestTMatrix, res_mult_matrix)
     TDynamicMatrix<param> v3(5);
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 3; ++j) {
-            ((*m1))[i][j] = ((*m2))[i][j] = i * 3 + (j + 1);
+            ((m1))[i][j] = ((m2))[i][j] = i * 3 + (j + 1);
         }
     }
     v3[0][0] = 30;
@@ -119,7 +123,7 @@ TYPED_TEST_P(TestTMatrix, res_mult_matrix)
     v3[2][0] = 102;
     v3[2][1] = 126;
     v3[2][2] = 150;
-    EXPECT_EQ(((*m1) * (*m2)), v3);
+    EXPECT_EQ(((m1) * (m2)), v3);
 }
 
 
