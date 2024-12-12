@@ -269,7 +269,7 @@ public:
       for (size_t i = 0; i < sz; i++)
           for (size_t j = 0; j < sz; j++)
               for (size_t k = 0; k < sz; k++)
-                  Result.pMem[i][j] += pMem[i][k] * m.pmem[k][j];
+                  Result.pMem[i][j] += pMem[i][k] * m.pMem[k][j];
       return Result;
   }
 
