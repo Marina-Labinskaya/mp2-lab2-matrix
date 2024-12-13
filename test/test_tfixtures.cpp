@@ -17,10 +17,11 @@ protected:
         m_Res_ptr = new TDynamicMatrix<T>(sz);
         m_Res = *m_Res_ptr;
     }
-    void TearDown()
+    void TearDown() // деструктор вызывается неявно (вызываюстя деструкторы для матриц, а m1, m2 и m_Res указывают на тоже самое место в памяти)
     {
-        delete m1_ptr;
-        delete m2_ptr;
+        //delete m1_ptr;
+        //delete m2_ptr;
+        //delete m_Res_ptr;
     }
     void CreateMatrix(size_t n) {
         new TDynamicMatrix<T>(n);
@@ -35,18 +36,6 @@ protected:
     TDynamicMatrix<T>* m_Res_ptr;
     TDynamicMatrix<T> m_Res;
     using par = T;
-public:
-    TestTMatrix((TDynamicMatrix<T> m_) {
-        new TDynamicMatrix<T>(m_);
-    }
-    TestTMatrix(size_t n) {
-        new TDynamicMatrix<T>(n);
-    }
-    ~TestTMatrix() {
-        delete[] m1_ptr;
-        delete[] m2_ptr;
-        delete[] m_Res_ptr;
-    }
 };
 TYPED_TEST_CASE_P(TestTMatrix);
 
@@ -58,7 +47,7 @@ TYPED_TEST_P(TestTMatrix, compare_equal_matrix)
 
 TYPED_TEST_P(TestTMatrix, can_create_copied_matrix)
 {
-    ASSERT_NO_THROW(TestTMatrix a(this->m1));
+    ASSERT_NO_THROW(this->CreateMatrix(this->m1));
 }
 
 TYPED_TEST_P(TestTMatrix, can_add_matrices_with_equal_size)
@@ -115,6 +104,7 @@ TYPED_TEST_P(TestTMatrix, mult_matrix)
     this->m_Res[3][2] = 138;
     
     EXPECT_EQ(((this->m1) * (this->m2)), this->m_Res);
+    this->TearDown();
 }
 
 

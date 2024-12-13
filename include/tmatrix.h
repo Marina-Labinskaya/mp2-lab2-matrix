@@ -207,6 +207,18 @@ public:
     for (size_t i = 0; i < sz; i++)
       pMem[i] = TDynamicVector<T>(sz);
   }
+  TDynamicMatrix(const TDynamicMatrix& m) : TDynamicVector<TDynamicVector<T> >(m.sz)
+  {
+      sz = m.sz;
+      for (size_t i = 0; i < sz; i++)
+      {
+          pMem[i] = TDynamicVector<T>(sz);
+          for (int j = 0; j < sz; j++)
+          {
+              pMem[i][j] = m.pMem[i][j];
+          }
+      }
+  }
 
   using TDynamicVector<TDynamicVector<T>>::operator[];
     
