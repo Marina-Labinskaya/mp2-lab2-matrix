@@ -35,6 +35,18 @@ protected:
     TDynamicMatrix<T>* m_Res_ptr;
     TDynamicMatrix<T> m_Res;
     using par = T;
+public:
+    TestTMatrix((TDynamicMatrix<T> m_) {
+        new TDynamicMatrix<T>(m_);
+    }
+    TestTMatrix(size_t n) {
+        new TDynamicMatrix<T>(n);
+    }
+    ~TestTMatrix() {
+        delete[] m1_ptr;
+        delete[] m2_ptr;
+        delete[] m_Res_ptr;
+    }
 };
 TYPED_TEST_CASE_P(TestTMatrix);
 
@@ -46,8 +58,7 @@ TYPED_TEST_P(TestTMatrix, compare_equal_matrix)
 
 TYPED_TEST_P(TestTMatrix, can_create_copied_matrix)
 {
-   
-    ASSERT_NO_THROW(this->CreateMatrix(this->m1));
+    ASSERT_NO_THROW(TestTMatrix a(this->m1));
 }
 
 TYPED_TEST_P(TestTMatrix, can_add_matrices_with_equal_size)
