@@ -19,9 +19,9 @@ protected:
     }
     void TearDown() // деструктор вызывается неявно (вызываюстя деструкторы для матриц, а m1, m2 и m_Res указывают на тоже самое место в памяти)
     {
-        //delete m1_ptr;
-        //delete m2_ptr;
-        //delete m_Res_ptr;
+        delete m1_ptr;
+        delete m2_ptr;
+        delete m_Res_ptr;
     }
     void CreateMatrix(size_t n) {
         new TDynamicMatrix<T>(n);
@@ -104,7 +104,7 @@ TYPED_TEST_P(TestTMatrix, mult_matrix)
     this->m_Res[3][2] = 138;
     
     EXPECT_EQ(((this->m1) * (this->m2)), this->m_Res);
-    this->TearDown();
+    //this->TearDown();
 }
 
 
