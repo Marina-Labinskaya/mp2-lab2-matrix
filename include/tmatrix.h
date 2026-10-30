@@ -34,7 +34,7 @@ protected:
   }
 public:
   TDynamicVector(size_t size = 1) : sz(checked_size(size)), pMem(new T[sz]()) {}
-  TDynamicVector(T* arr, size_t s) : szsz(checked_size(s)) {
+  TDynamicVector(T* arr, size_t s) : sz(checked_size(s)) {
     if (arr == nullptr)
       throw invalid_argument("TDynamicVector ctor requires non-nullptr arg");
     pMem = new T[sz];
@@ -93,7 +93,7 @@ public:
 
   // индексация с контролем
   T& at(size_t ind)
-  {if(ind< || ind = sz)
+  {if(ind>= sz)
     throw out_of_range("Vector index out of range");
     return pMem[ind];
     return TDynamicVector <T> :: operator[](ind);
