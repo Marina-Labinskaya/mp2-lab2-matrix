@@ -10,23 +10,21 @@
 
 int main()
 {
-  TDynamicMatrix<int> a(5), b(5), c(5);
-  int i, j;
+  TDynamicMatrix<int> a(5), b(5), c(5), d(5);
 
   setlocale(LC_ALL, "Russian");
-  cout << "Тестирование класс работы с матрицами"
-    << endl;
-  for (i = 0; i < 5; i++)
-    for (j = i; j < 5; j++ )
-    {
-      a[i][j] =  i * 10 + j;
-      b[i][j] = (i * 10 + j) * 100;
-    }
+  cout << "Тестирование класс работы с матрицами" << endl;
+  a.GenerateRandom(-10,10);
+  b.GenerateRandom(-10,10);
+  cout << "Matrix a" << endl << a << endl;
+  cout << "Matrix b" << endl << b << endl;
+  
   c = a + b;
-  cout << "Matrix a = " << endl << a << endl;
-  cout << "Matrix b = " << endl << b << endl;
   cout << "Matrix c = a + b" << endl << c << endl;
-
+  c = a - b;
+  cout << "Matrix c = a - b" << endl << c << endl;
+  c = a * b;
+  cout << "Matrix c = a * b" << endl << c << endl;
   return 0;
 }
 //---------------------------------------------------------------------------
