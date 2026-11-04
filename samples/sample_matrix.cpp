@@ -10,23 +10,38 @@
 
 int main()
 {
-  TDynamicMatrix<int> a(5), b(5), c(5);
-  int i, j;
+    setlocale(LC_ALL, "Russian");
+    cout << "Тестирование класса работы с матрицами" << endl;
 
-  setlocale(LC_ALL, "Russian");
-  cout << "Тестирование класс работы с матрицами"
-    << endl;
-  for (i = 0; i < 5; i++)
-    for (j = i; j < 5; j++ )
-    {
-      a[i][j] =  i * 10 + j;
-      b[i][j] = (i * 10 + j) * 100;
+    try {
+        size_t size;
+        cout << "Введите размер квадратных матриц: ";
+        cin >> size;
+
+        TDynamicMatrix<int> a(size), b(size), c(size);
+
+        cout << "\nВведите элементы первой матрицы (построчно):" << endl;
+        cin >> a;
+
+        cout << "\nВведите элементы второй матрицы (построчно):" << endl;
+        cin >> b;
+
+        cout << "\nМатрица A:" << endl << a;
+        cout << "\nМатрица B:" << endl << b;
+
+        c = a + b;
+        cout << "\nСложение (A + B):" << endl << c;
+
+        c = a - b;
+        cout << "\nВычитание (A - B):" << endl << c;
+
+        c = a * b;
+        cout << "\nУмножение (A * B):" << endl << c;
     }
-  c = a + b;
-  cout << "Matrix a = " << endl << a << endl;
-  cout << "Matrix b = " << endl << b << endl;
-  cout << "Matrix c = a + b" << endl << c << endl;
+    catch (const exception& e) {
+        cerr << "\nОшибка: " << e.what() << endl;
+    }
 
-  return 0;
+    return 0;
 }
 //---------------------------------------------------------------------------
