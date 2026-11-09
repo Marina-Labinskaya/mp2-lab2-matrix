@@ -10,23 +10,32 @@
 
 int main()
 {
-  TDynamicMatrix<int> a(5), b(5), c(5);
-  int i, j;
+	setlocale(LC_ALL, "Russian");
 
-  setlocale(LC_ALL, "Russian");
-  cout << "Тестирование класс работы с матрицами"
-    << endl;
-  for (i = 0; i < 5; i++)
-    for (j = i; j < 5; j++ )
-    {
-      a[i][j] =  i * 10 + j;
-      b[i][j] = (i * 10 + j) * 100;
-    }
-  c = a + b;
-  cout << "Matrix a = " << endl << a << endl;
-  cout << "Matrix b = " << endl << b << endl;
-  cout << "Matrix c = a + b" << endl << c << endl;
+	int n;
+	cout << "Введите размерность матриц: ";
+	cin >> n;
 
-  return 0;
+	TDynamicMatrix<int> a(n), b(n), c(n);
+
+	cout << "Введите матрицу A (" << n << "x" << n << "):" << endl;
+	cin >> a;
+
+	cout << "Введите матрицу B (" << n << "x" << n << "):" << endl;
+	cin >> b;
+
+	cout << "\nMatrix A = \n" << a;
+	cout << "\nMatrix B = \n" << b;
+
+	c = a + b;
+	cout << "\nMatrix C = A + B = \n" << c;
+
+	c = a - b;
+	cout << "\nMatrix C = A - B = \n" << c;
+
+	c = a * b;
+	cout << "\nMatrix C = A * B = \n" << c;
+
+	return 0;
 }
 //---------------------------------------------------------------------------
